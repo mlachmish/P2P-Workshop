@@ -3,6 +3,7 @@
 
 from random import randrange, shuffle
 from BitTornado.clock import clock
+from sys import stdout
 import time
 import random
 import math
@@ -207,6 +208,20 @@ class PiecePicker:
 #         if best is not None:
 #             return best
 #         return None
+
+    def display(self) : 
+        print '--------------------------------PiecePicker--------------------------------------'
+        print 'InOrder-Interval:         ',  self.getInOrderInterval()
+        print '==================================================================================' 
+        stdout.flush()
+        
+    def setAttributes(self,swIntervalFunc,config,pieceSize,downMeasure):
+        self.swIntervalFunc=swIntervalFunc
+        self.config=config
+        self.pieceSize=int(pieceSize)
+        self.downMeasure=downMeasure
+        self.inOrderIntervalLength = int(0.1*self.numpieces)
+        self.startTime = time.time()
 
     def next(self,haves,wantfunc,complete_first = False):
         if (time.time()-self.startTime < int(self.config["delay"]) ):
