@@ -3,7 +3,7 @@
 # Written by Bram Cohen
 # see LICENSE.txt for license information
 
-#Test 1 2
+#Test 1 2 3
 
 from BitTornado import PSYCO
 if PSYCO.psyco:
