@@ -676,7 +676,7 @@ class BT1Download:
                                            self.storagewrapper,
                                            self.config,self.downmeasure)
                                            
-        self.picker.setAttribute(self.streamwatcher.getCurrInterval(), self.config, self.storagewrapper.piece_size, self.downmeasure);
+        self.picker.setAttribute(self.streamwatcher.getCurrInterval, self.config, self.storagewrapper.piece_size, self.downmeasure);
         self.rawserver.add_task(self.streamwatcher.verify_vod_rate,int(self.config['delay']))
         #######################
         
