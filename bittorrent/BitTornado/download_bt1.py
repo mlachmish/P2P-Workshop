@@ -247,7 +247,7 @@ def download(params, filefunc, statusfunc, finfunc, errorfunc, doneflag, cols,
     d.startRerequester()
     d.autoStats()
 
-    statusfunc(activity = 'connecting to peers')
+    usfunc(activity = 'connecting to peers')
 
     if paramfunc:
         paramfunc({ 'max_upload_rate' : d.setUploadRate,  # change_max_upload_rate(<int KiB/sec>)
@@ -677,11 +677,6 @@ class BT1Download:
                                            self.config,self.downmeasure)
                                            
         self.rawserver.add_task(self.streamwatcher.verify_vod_rate,int(self.config['delay']))
-        
-        self.picker.setAttributes(self.streamwatcher.getCurrInterval,
-                                  self.config,
-                                  self.storagewrapper.piece_size,
-                                  self.downmeasure)
         #######################
         
         self.started = True

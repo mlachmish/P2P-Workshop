@@ -3,11 +3,6 @@
 
 from random import randrange, shuffle
 from BitTornado.clock import clock
-from sys import stdout
-import time
-import random
-import math
-
 try:
     True
 except:
@@ -178,86 +173,10 @@ class PiecePicker:
             self.crosscount2[numhaves+1] += 1
         self._remove_from_interests(piece)
 
-###### GROUP VOD ######
 
-#     def next(self, haves, wantfunc, complete_first = False):
-#         cutoff = self.numgot < self.rarest_first_cutoff
-#         complete_first = (complete_first or cutoff) and not haves.complete()
-#         best = None
-#         bestnum = 2 ** 30
-#         for i in self.started:
-#             if haves[i] and wantfunc(i):
-#                 if self.level_in_interests[i] < bestnum:
-#                     best = i
-#                     bestnum = self.level_in_interests[i]
-#         if best is not None:
-#             if complete_first or (cutoff and len(self.interests) > self.cutoff):
-#                 return best
-#         if haves.complete():
-#             r = [ (0, min(bestnum,len(self.interests))) ]
-#         elif cutoff and len(self.interests) > self.cutoff:
-#             r = [ (self.cutoff, min(bestnum,len(self.interests))),
-#                       (0, self.cutoff) ]
-#         else:
-#             r = [ (0, min(bestnum,len(self.interests))) ]
-#         for lo,hi in r:
-#             for i in xrange(lo,hi):
-#                 for j in self.interests[i]:
-#                     if haves[j] and wantfunc(j):
-#                         return j
-#         if best is not None:
-#             return best
-#         return None
-
-    def display(self) : 
-        print '--------------------------------PiecePicker--------------------------------------'
-        print 'InOrder-Interval:         ',  self.getInOrderInterval()
-        print '==================================================================================' 
-        stdout.flush()
-        
-    def setAttributes(self,swIntervalFunc,config,pieceSize,downMeasure):
-        self.swIntervalFunc=swIntervalFunc
-        self.config=config
-        self.pieceSize=int(pieceSize)
-        self.downMeasure=downMeasure
-        self.inOrderIntervalLength = int(0.1*self.numpieces)
-        self.startTime = time.time()
-
-    def next(self,haves,wantfunc,complete_first = False):
-        if (time.time()-self.startTime < int(self.config["delay"]) ):
-            p=self.RandomRarest(haves, wantfunc)
-        else:
-            p = self.inOrder(haves, wantfunc)
-        if (p==None):
-            downloadRate = self.downMeasure.get_rate() / 1024.0 
-            if downloadRate > int(self.config["rate"])*1.5:
-                p=self.BetaRarest(haves, wantfunc)
-            else:
-                p=self.RandomRarest(haves, wantfunc)
-        if (p==None):
-            p=self.RandomRarest(haves, wantfunc)
-        return p
-
-    def getInOrderInterval(self):
-        interval = self.swIntervalFunc()
-        alpha = interval[1]
-        if (alpha>0):
-            alpha+=1
-        beta = alpha + self.inOrderIntervalLength
-        if beta>self.numpieces-1:
-            beta  =  self.numpieces-1
-        if alpha>beta-1:
-            alpha  = beta-1
-        return [alpha,beta]
-    
-    def inOrder(self, haves, wantfunc):
-        interval = self.getInOrderInterval()
-        for j in xrange(interval[0],interval[1]):
-                if  haves[j] and wantfunc(j):
-                    return j 
-        return None
-
-    def RandomRarest(self, haves, wantfunc):
+    def next(self, haves, wantfunc, complete_first = False):
+        cutoff = self.numgot < self.rarest_first_cutoff
+        complete_first = (complete_first or cutoff) and not haves.complete()
         best = None
         bestnum = 2 ** 30
         for i in self.started:
@@ -266,11 +185,13 @@ class PiecePicker:
                     best = i
                     bestnum = self.level_in_interests[i]
         if best is not None:
-            return best
+            if complete_first or (cutoff and len(self.interests) > self.cutoff):
+                return best
         if haves.complete():
             r = [ (0, min(bestnum,len(self.interests))) ]
-        elif len(self.interests) > self.cutoff:
-            r = [ (self.cutoff, min(bestnum,len(self.interests))) ,(0, self.cutoff) ]
+        elif cutoff and len(self.interests) > self.cutoff:
+            r = [ (self.cutoff, min(bestnum,len(self.interests))),
+                      (0, self.cutoff) ]
         else:
             r = [ (0, min(bestnum,len(self.interests))) ]
         for lo,hi in r:
@@ -281,52 +202,6 @@ class PiecePicker:
         if best is not None:
             return best
         return None
-    
-    def BetaRarest(self, haves, wantfunc):
-        best = None
-        bestnum = 2 ** 30
-        for i in self.started:
-            if haves[i] and wantfunc(i):
-                if self.level_in_interests[i] < bestnum:
-                    best = i
-                    bestnum = self.level_in_interests[i]
-        if best is not None:
-            return best
-        if haves.complete():
-            r = [ (0, min(bestnum,len(self.interests))) ]
-        elif len(self.interests) > self.cutoff:
-            r = [ (self.cutoff, min(bestnum,len(self.interests))) ,(0, self.cutoff) ]
-        else:
-            r = [ (0, min(bestnum,len(self.interests))) ]
-        for lo,hi in r:
-            for i in xrange(lo,hi):
-                betaList = list(self.interests[i])
-                betaList.sort()
-                if  len(betaList):
-                    p = self.betaRandom(haves, wantfunc , betaList )
-                    if p is not None:
-                        return p 
-        if best is not None:
-            return best
-        return None
-    
-    def betaRandom(self, haves, wantfunc , list ):   
-            beta_pieces_list = []                 
-            for j in list:
-                if haves[j] and wantfunc(j):
-                    beta_pieces_list.append(j)
-            
-            if len(beta_pieces_list)==0:
-                return None
-            
-            bvRand = random.betavariate(0.4,4.0)            
-            if bvRand == 1:
-                i =  len(beta_pieces_list) - 1
-            else:
-                i =  int(math.floor( bvRand * len(beta_pieces_list)))         
-            return beta_pieces_list[i]
-
-        #######################
 
 
     def am_I_complete(self):
