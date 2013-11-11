@@ -40,6 +40,15 @@ class StreamWatcher:
         self.gap=int(self.config['gap'])
         self.init_csv(self.config['out_dir']+'statistics-order-'+self.config['order']+'-gap-'+str(self.gap)+'.csv')    
         self.prefetch = int(((float(self.prefetchT) / 100)*self.toKbytes(self.total))/self.rate)
+        ###VOD###
+        self.alpha = 0
+        self.beta = 0
+        #########
+    
+    ### VOD ###
+    def getCurrInterval(self):
+        return [self.alpha, self.beta]
+    ###########
     
     def init_csv (self, csv):
         self.csvFile = csv

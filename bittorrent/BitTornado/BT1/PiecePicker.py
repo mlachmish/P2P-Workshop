@@ -3,6 +3,7 @@
 
 from random import randrange, shuffle
 from BitTornado.clock import clock
+import time
 try:
     True
 except:
@@ -173,10 +174,48 @@ class PiecePicker:
             self.crosscount2[numhaves+1] += 1
         self._remove_from_interests(piece)
 
-
-    def next(self, haves, wantfunc, complete_first = False):
-        cutoff = self.numgot < self.rarest_first_cutoff
-        complete_first = (complete_first or cutoff) and not haves.complete()
+    ####### GROUP VOD ######
+    
+    def setAttribute(self, swIntervalFunc, config, pieceSize, downMeasure):
+        self.swIntervalFunc = swIntervalFunc
+        self.config = config
+        self.pieceSize = pieceSize
+        self.downMeasure = downMeasure
+        self.inOrderIntervalLength = int(0.1 * self.numpieces);
+        self.startTime = time.time()
+    
+    ########################
+    
+    
+    def next(self,haves,wantfunc,complete_first = False):
+        if (time.time()-self.startTime < int(self.config["delay"]) ):
+            p=self.RandomRarest(haves, wantfunc)
+        else:
+            p = self.inOrder(haves, wantfunc)
+        if (p==None):
+            p=self.RandomRarest(haves, wantfunc)
+        return p
+            
+    def getInOrderInterval(self):
+        interval = self.swIntervalFunc()
+        alpha = interval[1]
+        if (alpha>0):
+            alpha+=1
+        beta = alpha + self.inOrderIntervalLength
+        if beta>self.numpieces-1:
+            beta  =  self.numpieces-1
+        if alpha>beta-1:
+            alpha  = beta-1
+        return [alpha,beta]
+    
+    def inOrder(self, haves, wantfunc):
+        interval = self.getInOrderInterval()
+        for j in xrange(interval[0],interval[1]):
+                if  haves[j] and wantfunc(j):
+                    return j 
+        return None
+    
+    def RandomRarest(self, haves, wantfunc):
         best = None
         bestnum = 2 ** 30
         for i in self.started:
@@ -185,13 +224,11 @@ class PiecePicker:
                     best = i
                     bestnum = self.level_in_interests[i]
         if best is not None:
-            if complete_first or (cutoff and len(self.interests) > self.cutoff):
-                return best
+            return best
         if haves.complete():
             r = [ (0, min(bestnum,len(self.interests))) ]
-        elif cutoff and len(self.interests) > self.cutoff:
-            r = [ (self.cutoff, min(bestnum,len(self.interests))),
-                      (0, self.cutoff) ]
+        elif len(self.interests) > self.cutoff:
+            r = [ (self.cutoff, min(bestnum,len(self.interests))) ,(0, self.cutoff) ]
         else:
             r = [ (0, min(bestnum,len(self.interests))) ]
         for lo,hi in r:
@@ -201,9 +238,8 @@ class PiecePicker:
                         return j
         if best is not None:
             return best
-        return None
-
-
+        return None        
+    
     def am_I_complete(self):
         return self.done
     
