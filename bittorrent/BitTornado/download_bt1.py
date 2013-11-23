@@ -670,7 +670,7 @@ class BT1Download:
         if self.config['super_seeder']:
             self.set_super_seed()
         
-        ###### GROUP VOD ######
+        #### P2PVODEX start ####
         self.streamwatcher = StreamWatcher(self.rawserver.add_task,
                                            self.downloader,
                                            self.storagewrapper,
@@ -678,7 +678,7 @@ class BT1Download:
                                            
         self.picker.setAttribute(self.streamwatcher.getCurrInterval, self.config, self.storagewrapper.piece_size, self.downmeasure);
         self.rawserver.add_task(self.streamwatcher.verify_vod_rate,int(self.config['delay']))
-        #######################
+        #### P2PVODEX end ####
         
         self.started = True
         return True

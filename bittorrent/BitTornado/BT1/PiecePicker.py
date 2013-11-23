@@ -174,7 +174,7 @@ class PiecePicker:
             self.crosscount2[numhaves+1] += 1
         self._remove_from_interests(piece)
 
-    ####### GROUP VOD ######
+    #### P2PVODEX start ####
     
     def setAttribute(self, swIntervalFunc, config, pieceSize, downMeasure):
         self.swIntervalFunc = swIntervalFunc
@@ -182,10 +182,7 @@ class PiecePicker:
         self.pieceSize = pieceSize
         self.downMeasure = downMeasure
         self.inOrderIntervalLength = int(0.1 * self.numpieces);
-        self.startTime = time.time()
-    
-    ########################
-    
+        self.startTime = time.time()    
     
     def next(self,haves,wantfunc,complete_first = False):
         if (time.time()-self.startTime < int(self.config["delay"]) ):
@@ -239,6 +236,7 @@ class PiecePicker:
         if best is not None:
             return best
         return None        
+    #### P2PVODEX end ####
     
     def am_I_complete(self):
         return self.done
