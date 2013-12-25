@@ -37,6 +37,7 @@ class PiecePicker:
         self.seeds_connected = 0
         self._init_interests()
         self.streamWatcher = None
+        self.rank_values = [0] * numpieces
 
  
     def _init_interests(self):
@@ -207,6 +208,57 @@ class PiecePicker:
         """
         return self.inOrder(haves, wantfunc)
         
+    def rank(self, haves, wantfunc):
+        """
+        Ranking algorithm implementation
+        """
+        
+        "Rarest part"
+        rarest_values = [0]*self.numpieces
+        for i in range(self.numpieces):
+            rarest_values[i] = 1 / max(self.level_in_interests[i],1)
+
+        "Normalize"
+        max_rarest = max(self.rarest_values)
+        for i in range(self.numpieces):
+            rarest_values[i] = rarest_values[i] / max_rarest
+            
+            
+        "In-Order part"
+        inorder_values = [0]*self.numpieces
+        t = int(time.time() - self.streamWatcher.startTime)
+        if t > self.streamWatcher.delay:
+            intervalStart  =  int(((t - self.streamWatcher.delay  + self.streamWatcher.prefetch ) * \
+                                    self.streamWatcher.rate) / self.streamWatcher.toKbytes(self.streamWatcher.piece_size))
+        else:
+            intervalStart = 0
+        for i in range(intervalStart, self.numpieces):
+            if haves[i] and wantfunc(i):
+                inorder_values[i] = 1 / (i - intervalStart + 1)
+                
+        "Normalize"
+        max_inorder = max(self.rarest_values)
+        for i in range(self.numpieces):
+            inorder_values[i] = inorder_values[i] / max_inorder
+        
+        "Let the rank magic work"
+        for i in range(self.numpieces):
+            self.rank_values[i] = rarest_value[i] + inorder_value[i];
+            
+        "Return the best piece"
+        bestnum = 0
+        best_piece = -1
+        for i in range(intervalStart, self.numpieces):
+            if haves[i] and wantfunc(i):
+                if self.rank_values[i] > bestnum:
+                    bestnum = self.rank_values[i]
+                    best_piece = i
+                    
+        "Just for backup"
+        if best_piece == -1:
+            return self.rarestFirst(haves, wantfunc, True);
+        
+        return best_piece
     
     def inOrder(self, haves, wantfunc):
         """
