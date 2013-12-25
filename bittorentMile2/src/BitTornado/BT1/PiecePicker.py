@@ -216,12 +216,12 @@ class PiecePicker:
         "Rarest part"
         rarest_values = [0]*self.numpieces
         for i in range(self.numpieces):
-            rarest_values[i] = 1 / max(self.level_in_interests[i],1)
+            rarest_values[i] = 1 / float(max(self.level_in_interests[i],1))
 
         "Normalize"
         max_rarest = max(rarest_values)
         for i in range(self.numpieces):
-            rarest_values[i] = rarest_values[i] / max_rarest
+            rarest_values[i] = rarest_values[i] / float(max_rarest)
             
             
         "In-Order part"
@@ -234,12 +234,12 @@ class PiecePicker:
             intervalStart = 0
         for i in range(intervalStart, self.numpieces):
             if haves[i] and wantfunc(i):
-                inorder_values[i] = 1 / (i - intervalStart + 1)
+                inorder_values[i] = 1 / float((i - intervalStart + 1))
                 
         "Normalize"
         max_inorder = max(rarest_values)
         for i in range(self.numpieces):
-            inorder_values[i] = inorder_values[i] / max_inorder
+            inorder_values[i] = inorder_values[i] / float(max_inorder)
         
         "Let the rank magic work"
         for i in range(self.numpieces):
