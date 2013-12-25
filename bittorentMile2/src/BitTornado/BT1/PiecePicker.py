@@ -219,7 +219,7 @@ class PiecePicker:
             rarest_values[i] = 1 / max(self.level_in_interests[i],1)
 
         "Normalize"
-        max_rarest = max(self.rarest_values)
+        max_rarest = max(rarest_values)
         for i in range(self.numpieces):
             rarest_values[i] = rarest_values[i] / max_rarest
             
@@ -237,7 +237,7 @@ class PiecePicker:
                 inorder_values[i] = 1 / (i - intervalStart + 1)
                 
         "Normalize"
-        max_inorder = max(self.rarest_values)
+        max_inorder = max(rarest_values)
         for i in range(self.numpieces):
             inorder_values[i] = inorder_values[i] / max_inorder
         
