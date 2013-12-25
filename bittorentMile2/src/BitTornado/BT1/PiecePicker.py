@@ -243,7 +243,7 @@ class PiecePicker:
         
         "Let the rank magic work"
         for i in range(self.numpieces):
-            self.rank_values[i] = rarest_value[i] + inorder_value[i];
+            self.rank_values[i] = rarest_values[i] + inorder_values[i];
             
         "Return the best piece"
         bestnum = 0
