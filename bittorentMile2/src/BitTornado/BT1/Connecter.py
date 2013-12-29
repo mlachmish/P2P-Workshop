@@ -4,6 +4,7 @@
 from BitTornado.bitfield import Bitfield
 from BitTornado.clock import clock
 from binascii import b2a_hex
+from multiprocessing.dummy.connection import Connection
 
 try:
     True
@@ -34,7 +35,9 @@ REQUEST = chr(6)
 PIECE = chr(7)
 # index, begin, piece
 CANCEL = chr(8)
-
+### VOD tag ####
+VOD = chr(9)
+### VOD tag ####
 class Connection:
     def __init__(self, connection, connecter):
         self.connection = connection
@@ -111,6 +114,9 @@ class Connection:
 
     def send_keepalive(self):
         self._send_message('')
+
+    def send_vodUser(self):
+        self._send_message(VOD)
 
     def _send_message(self, s):
         s = tobinary(len(s))+s
@@ -227,6 +233,12 @@ class Connecter:
                 len(message) != 1):
             connection.close()
             return
+        ### VOD tag ####
+        if t == VOD:            
+            f = open('/a/home/cc/students/cs/asafrokach/my_results/myfile','w+')
+            f.write('vod user\n') # python will convert \n to os.linesep
+            f.close() # you can omit in most cases as the destructor will call if
+        ### VOD tag ####    
         if t == CHOKE:
             c.download.got_choke()
         elif t == UNCHOKE:

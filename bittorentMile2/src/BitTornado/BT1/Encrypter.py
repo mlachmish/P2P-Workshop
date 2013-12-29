@@ -68,6 +68,7 @@ class Connection:
         self.locally_initiated = (id != None)
         self.complete = False
         self.keepalive = lambda: None
+        self.voduser = lambda: None
         self.closed = False
         self.buffer = StringIO()
         if self.locally_initiated:
@@ -134,7 +135,9 @@ class Connection:
             self.connection.write(self.Encoder.my_id)
             incompletecounter.decrement()
         c = self.Encoder.connecter.connection_made(self)
+        
         self.keepalive = c.send_keepalive
+        self.voduser = c.send_vodUser
         return 4, self.read_len
 
     def read_len(self, s):
@@ -227,6 +230,7 @@ class Encoder:
         else:
             self.max_connections = self.config['max_connections']
         schedulefunc(self.send_keepalives, keepalive_delay)
+        schedulefunc(self.send_VodUsers, keepalive_delay)
 
     def send_keepalives(self):
         self.schedulefunc(self.send_keepalives, self.keepalive_delay)
@@ -234,6 +238,14 @@ class Encoder:
             return
         for c in self.connections.values():
             c.keepalive()
+            
+### VOD tag ####
+    def send_VodUsers(self):
+        self.schedulefunc(self.send_keepalives, self.keepalive_delay)
+        if self.paused:
+            return
+        for c in self.connections.values():
+            c.send_vodUser()
 
     def start_connections(self, list):
         if not self.to_connect:
