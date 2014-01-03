@@ -2,7 +2,7 @@
 # see LICENSE.txt for license information
 
 import time
-from random import randrange, shuffle
+from random import randrange, shuffle, betavariate
 from BitTornado.clock import clock
 from BitTornado.StreamWatcher import StreamWatcher 
 try:
@@ -206,14 +206,14 @@ class PiecePicker:
         wantfunc - a function that return if we want that particular piece
         complete_first - should we complete pieces that we already started to take care of?
         """
-        return self.beta(haves, wantfunc)
+        return self.rank(haves, wantfunc)
     
     def beta(self, haves, wantfunc):
         #use beta distribution on inorder frame
 
-        while (true):
+        while (True):
             randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
-            
+            print(randomPiece)
             beta_values = [0]*self.numpieces
             t = int(time.time() - self.streamWatcher.startTime)
             if t > self.streamWatcher.delay:
@@ -222,11 +222,13 @@ class PiecePicker:
             else:
                 intervalStart = 0
             
-            if ( randomPiece < intervalStart): #don't download watched packets
-                 continue 
+            randomPiece += intervalStart
             if (haves[randomPiece] and wandfunc(randomPiece)): #if we want that piece and there's a seeder with it 
                  return randomPiece
+        #    else:
+         #       return self.rarestFirst(haves, wantfunc, True);                 
         
+            
         
     def rank(self, haves, wantfunc):
         """
