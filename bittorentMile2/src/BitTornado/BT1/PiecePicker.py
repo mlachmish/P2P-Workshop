@@ -211,7 +211,7 @@ class PiecePicker:
     def beta(self, haves, wantfunc):
         #use beta distribution on inorder frame
 
-        while (true):
+        while (True):
             randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
             print(randomPiece)
             beta_values = [0]*self.numpieces
