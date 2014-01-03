@@ -213,7 +213,7 @@ class PiecePicker:
 
         while (true):
             randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
-            
+            print(randomPiece)
             beta_values = [0]*self.numpieces
             t = int(time.time() - self.streamWatcher.startTime)
             if t > self.streamWatcher.delay:
