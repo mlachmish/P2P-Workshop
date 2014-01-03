@@ -9,6 +9,9 @@ try:
 except:
     True = 1
     False = 0
+#g
+haves = {1,2,3}
+print(haves.complete())
 
 class PiecePicker:
     def __init__(self, numpieces,
