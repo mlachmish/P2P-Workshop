@@ -228,7 +228,7 @@ class PiecePicker:
                  return randomPiece
         
             
-        x
+        
     def rank(self, haves, wantfunc):
         """
         Ranking algorithm implementation
