@@ -2,7 +2,7 @@
 # see LICENSE.txt for license information
 
 import time
-from random import randrange, shuffle
+from random import randrange, shuffle, betavariate
 from BitTornado.clock import clock
 from BitTornado.StreamWatcher import StreamWatcher 
 try:
@@ -207,7 +207,28 @@ class PiecePicker:
         complete_first - should we complete pieces that we already started to take care of?
         """
         return self.rank(haves, wantfunc)
+    
+    def beta(self, haves, wantfunc):
+        #use beta distribution on inorder frame
+
+        while (true):
+            randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
+            
+            beta_values = [0]*self.numpieces
+            t = int(time.time() - self.streamWatcher.startTime)
+            if t > self.streamWatcher.delay:
+                intervalStart  =  int(((t - self.streamWatcher.delay  + self.streamWatcher.prefetch ) * \
+                                        self.streamWatcher.rate) / self.streamWatcher.toKbytes(self.streamWatcher.piece_size))
+            else:
+                intervalStart = 0
+            
+            if ( randomPiece < intervalStart): #don't download watched packets
+                 continue 
+            if (haves[randomPiece] and wandfunc(randomPiece)): #if we want that piece and there's a seeder with it 
+                 return randomPiece
         
+            
+        x
     def rank(self, haves, wantfunc):
         """
         Ranking algorithm implementation
