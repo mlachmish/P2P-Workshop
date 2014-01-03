@@ -222,10 +222,11 @@ class PiecePicker:
             else:
                 intervalStart = 0
             
-            if ( randomPiece < intervalStart): #don't download watched packets
-                 continue 
+            randomPiece += intervalStart
             if (haves[randomPiece] and wandfunc(randomPiece)): #if we want that piece and there's a seeder with it 
                  return randomPiece
+        #    else:
+         #       return self.rarestFirst(haves, wantfunc, True);                 
         
             
         
