@@ -681,6 +681,8 @@ class BT1Download:
         #### P2PVODEX end  ####
                                            
         self.rawserver.add_task(self.streamwatcher.verify_vod_rate,int(self.config['delay']))
+        
+        self.rawserver.add_task(self.streamwatcher.lookforward,int(self.config['delay']))
         #######################
         
         self.started = True

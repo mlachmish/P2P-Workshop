@@ -110,6 +110,32 @@ class StreamWatcher:
         except:
             traceback.print_exc()
 
+#####THE ROCKS####
+    def lookforward(self):
+        #current watch time (+ prefetch)
+        t = int(time.time() - self.startTime -self.delay +self.prefetch)
+        currPiece = int((t * self.rate) / self.toKbytes(self.piece_size));
+        
+        if (self.storagewrapper.am_I_complete()):
+            return
+        
+        for i in range(currPiece,self.numOfPieces):
+            if ((not self.storagewrapper.do_I_have(i)) and self.storagewrapper.dirty.has_key(i)):
+                holes = self.get_dirty_holes (self.storagewrapper.dirty[i])
+                if (holes):
+                    #if download rate tells us we will not complete the download before time,
+                    #then lets cancel this piece
+                    current_rate = self.downmeasure.get_rate_noupdate();
+                    mean_piece_rate = current_rate / len(self.storagewrapper.dirty)
+                    size_left_to_download = self.get_left_dirty_size(self.storagewrapper.dirty[i])
+                    time_to_play_piece = (i * self.toKbytes(self.piece_size))/self.rate
+                    if ((size_left_to_download/mean_piece_rate) > time_to_play_piece - t):
+                        self.cancel_piece_download(i)
+                    
+        self.sched(self.lookforward, int(self.prefetch / 10))
+        return
+##################
+
     # DivineSeeders: When test is over spill the stats to CSV and
     # exit with test-success code (3)
     def test_completed(self):
@@ -141,6 +167,18 @@ class StreamWatcher:
             return holes
         except ValueError:
             return None
+        
+    ####THE ROCKS####
+    def get_left_dirty_size(self,dirty):
+        if (not dirty):
+            return None
+        size = 0
+        
+        for Item in dirty:
+            size += chunk_size - Item[1]
+            
+        return size;
+    #################
        
     def cancel_piece_download(self,index):
         pieceToCnacel = []
