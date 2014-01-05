@@ -48,6 +48,9 @@ class StreamWatcher:
         self.init_csv(self.config['out_dir']+'statistics-order-'+self.config['order']+'-gap-'+str(self.gap)+'.csv')    
         self.prefetch = int(((float(self.prefetchT) / 100)*self.toKbytes(self.total))/self.rate)
         self.stats = [] #DivineSeeders: The statistics data in memory
+        ####THE ROCKS####
+        self.total_canceled = 0
+        #################
     
     def init_csv (self, csv):
         self.csvFile = csv
@@ -131,6 +134,7 @@ class StreamWatcher:
                     time_to_play_piece = (i * self.toKbytes(self.piece_size))/self.rate
                     if ((size_left_to_download/mean_piece_rate) > time_to_play_piece - t):
                         self.cancel_piece_download(i)
+                        self.total_canceled += 1
                     
         self.sched(self.lookforward, int(self.prefetch / 10))
         return
@@ -174,6 +178,7 @@ class StreamWatcher:
             return None
         size = 0
         
+        chunk_size = dirty[0][1]
         for Item in dirty:
             size += chunk_size - Item[1]
             
@@ -193,6 +198,7 @@ class StreamWatcher:
             cur_piece = int(((t - self.delay) * self.rate) / self.toKbytes(self.piece_size))
             
             print '--------------------------------StreamWatcher-------------------------------------\r'
+            print 'Piece canceled    ', self.total_canceled, '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
