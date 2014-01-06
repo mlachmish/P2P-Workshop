@@ -50,6 +50,7 @@ class StreamWatcher:
         self.stats = [] #DivineSeeders: The statistics data in memory
         ####THE ROCKS####
         self.total_canceled = 0
+        self.pieces_canceled = []
         #################
     
     def init_csv (self, csv):
@@ -135,6 +136,7 @@ class StreamWatcher:
                     if ((size_left_to_download/mean_piece_rate) > time_to_play_piece - t):
                         self.cancel_piece_download(i)
                         self.total_canceled += 1
+                        self.pieces_canceled.append(i)
                     
         self.sched(self.lookforward, int(self.prefetch / 10))
         return
@@ -198,7 +200,8 @@ class StreamWatcher:
             cur_piece = int(((t - self.delay) * self.rate) / self.toKbytes(self.piece_size))
             
             print '--------------------------------StreamWatcher-------------------------------------\r'
-            print 'Piece canceled    ', self.total_canceled, '\r'
+            print 'Piece canceled    ',  self.total_canceled, '\r'
+            print 'Canceled list     ',  self.pieces_canceled, '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
