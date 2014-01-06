@@ -147,6 +147,7 @@ class StreamWatcher:
         self.sched(self.lookforward, int(self.prefetch / 10))
         
         ##to be removed
+        self.debug = []
         self.debug.insert(0, int(t))
         self.debug.insert(1, int(mean_piece_rate))
         self.debug.insert(2, int(current_rate))
