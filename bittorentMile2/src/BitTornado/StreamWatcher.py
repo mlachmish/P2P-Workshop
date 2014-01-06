@@ -154,6 +154,11 @@ class StreamWatcher:
         self.sched(self.lookforward, int(self.prefetch / 10))
         
         ##to be removed
+        if (size_left_to_download_of_canceled_piece == 0):
+            size_left_to_download_of_canceled_piece = self.debug[3]
+        if (time_to_play_piece_of_canceled_piece == 0):
+            time_to_play_piece_of_canceled_piece = self.debug[4]
+        
         self.debug = []
         self.debug.insert(0, int(t))
         self.debug.insert(1, int(mean_piece_rate))
