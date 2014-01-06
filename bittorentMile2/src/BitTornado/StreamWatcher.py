@@ -52,7 +52,7 @@ class StreamWatcher:
         self.total_canceled = 0
         self.pieces_canceled = []
         ##to be removed
-        self.debug = []
+        self.debug = [0,0,0,0,0]
         #################
     
     def init_csv (self, csv):
