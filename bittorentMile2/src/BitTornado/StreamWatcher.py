@@ -51,6 +51,8 @@ class StreamWatcher:
         ####THE ROCKS####
         self.total_canceled = 0
         self.pieces_canceled = []
+        ##to be removed
+        self.debug = []
         #################
     
     def init_csv (self, csv):
@@ -123,6 +125,10 @@ class StreamWatcher:
         if (self.storagewrapper.am_I_complete()):
             return
         
+        current_rate = 0
+        mean_piece_rate = 0
+        size_left_to_download = 0
+        time_to_play_piece = 0
         for i in range(currPiece,self.numOfPieces):
             if ((not self.storagewrapper.do_I_have(i)) and self.storagewrapper.dirty.has_key(i)):
                 holes = self.get_dirty_holes (self.storagewrapper.dirty[i])
@@ -139,6 +145,13 @@ class StreamWatcher:
                         self.pieces_canceled.append(i)
                     
         self.sched(self.lookforward, int(self.prefetch / 10))
+        
+        ##to be removed
+        self.debug[0] = t
+        self.debug[1] = mean_piece_rate
+        self.debug[2] = current_rate
+        self.debug[3] = size_left_to_download
+        self.debug[4] = time_to_play_piece
         return
 ##################
 
@@ -202,6 +215,8 @@ class StreamWatcher:
             print '--------------------------------StreamWatcher-------------------------------------\r'
             print 'Piece canceled    ',  self.total_canceled, '\r'
             print 'Canceled list     ',  self.pieces_canceled, '\r'
+            ##to be removed
+            print 'Debud             ',  self.debug, '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
