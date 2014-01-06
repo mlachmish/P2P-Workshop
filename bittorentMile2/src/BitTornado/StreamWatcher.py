@@ -52,7 +52,7 @@ class StreamWatcher:
         self.total_canceled = 0
         self.pieces_canceled = []
         ##to be removed
-        self.debug = []
+        self.debug = [5]
         #################
     
     def init_csv (self, csv):
@@ -216,7 +216,7 @@ class StreamWatcher:
             print 'Piece canceled    ',  self.total_canceled, '\r'
             print 'Canceled list     ',  self.pieces_canceled, '\r'
             ##to be removed
-            print 'Debud             ',  self.debug, '\r'
+            print 'Debug             ',  self.debug, '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
