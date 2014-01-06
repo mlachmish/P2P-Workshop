@@ -230,7 +230,7 @@ class StreamWatcher:
             print 'Canceled list     ',  self.pieces_canceled, '\r'
             ##to be removed
             print 'Debug             ',  self.debug, '\r'
-            print 'Dirty             ',  self.storagewrapper.dirty.keys(), '\r'
+#             print 'Dirty             ',  self.storagewrapper.dirty.keys(), '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
