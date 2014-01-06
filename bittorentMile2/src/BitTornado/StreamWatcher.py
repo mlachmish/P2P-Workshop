@@ -129,6 +129,10 @@ class StreamWatcher:
         mean_piece_rate = 0
         size_left_to_download = 0
         time_to_play_piece = 0
+        ##to be removed
+        size_left_to_download_of_canceled_piece = 0
+        time_to_play_piece_of_canceled_piece = 0
+        
         for i in range(currPiece,self.numOfPieces):
             if ((not self.storagewrapper.do_I_have(i)) and self.storagewrapper.dirty.has_key(i)):
                 holes = self.get_dirty_holes (self.storagewrapper.dirty[i])
@@ -143,6 +147,9 @@ class StreamWatcher:
                         self.cancel_piece_download(i)
                         self.total_canceled += 1
                         self.pieces_canceled.append(i)
+                        ##to be removed
+                        size_left_to_download_of_canceled_piece = size_left_to_download
+                        time_to_play_piece_of_canceled_piece = time_to_play_piece
                     
         self.sched(self.lookforward, int(self.prefetch / 10))
         
@@ -151,8 +158,8 @@ class StreamWatcher:
         self.debug.insert(0, int(t))
         self.debug.insert(1, int(mean_piece_rate))
         self.debug.insert(2, int(current_rate))
-        self.debug.insert(3, int(size_left_to_download))
-        self.debug.insert(4, int(time_to_play_piece))
+        self.debug.insert(3, int(size_left_to_download_of_canceled_piece))
+        self.debug.insert(4, int(time_to_play_piece_of_canceled_piece))
         return
 ##################
 
@@ -218,6 +225,7 @@ class StreamWatcher:
             print 'Canceled list     ',  self.pieces_canceled, '\r'
             ##to be removed
             print 'Debug             ',  self.debug, '\r'
+            print 'Dirty             ',  self.storagewrapper.dirty.keys(), '\r'
             print 'Csv stats:        ',  self.csvFile,'\r'
             print 'DFS is:           ',  self.total_dfs                 ,'bytes\r'
             print 'DFS/Total is:     ',  (self.total_dfs*100)/self.total ,'%\r'
