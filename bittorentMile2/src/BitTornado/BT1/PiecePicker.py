@@ -208,10 +208,8 @@ class PiecePicker:
         """
         return self.rank(haves, wantfunc)
     
-    def beta(self, haves, wantfunc):
-        #use beta distribution on inorder frame
-
-        while (True):
+    def beta2(self, Haves,wantfunc):
+         while (True):
             randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
             print(randomPiece)
             beta_values = [0]*self.numpieces
@@ -223,12 +221,78 @@ class PiecePicker:
                 intervalStart = 0
             
             randomPiece += intervalStart
+            
             if (haves[randomPiece] and wandfunc(randomPiece)): #if we want that piece and there's a seeder with it 
+                 return randomPiece
+    
+    def beta(self, haves, wantfunc):
+        #use beta distribution on inorder frame
+
+        while (True):
+            randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)
+            
+           
+            t = int(time.time() - self.streamWatcher.startTime)
+            if t > self.streamWatcher.delay:
+                intervalStart  =  int(((t - self.streamWatcher.delay  + self.streamWatcher.prefetch ) * \
+                                        self.streamWatcher.rate) / self.streamWatcher.toKbytes(self.streamWatcher.piece_size))
+            else:
+                intervalStart = 0
+            #2/7 is the average 
+            randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
+            randomPiece += rankForBeta(self)            
+            if ((randomPiece > intervalStart) and (haves[randomPiece] and wandfunc(randomPiece))): #if we want that piece and there's a seeder with it 
                  return randomPiece
         #    else:
          #       return self.rarestFirst(haves, wantfunc, True);                 
         
+    def rankForBeta(self):
+        """
+        Ranking algorithm implementation
+        """
+        
+        "Rarest part"
+        rarest_values = [0]*self.numpieces
+        for i in range(self.numpieces):
+            rarest_values[i] = 1 / float(max(self.level_in_interests[i],1))
+
+        "Normalize"
+        max_rarest = max(rarest_values)
+        for i in range(self.numpieces):
+            rarest_values[i] = rarest_values[i] / float(max_rarest)
             
+            
+        "In-Order part"
+        inorder_values = [0]*self.numpieces
+        t = int(time.time() - self.streamWatcher.startTime)
+        if t > self.streamWatcher.delay:
+            intervalStart  =  int(((t - self.streamWatcher.delay  + self.streamWatcher.prefetch ) * \
+                                    self.streamWatcher.rate) / self.streamWatcher.toKbytes(self.streamWatcher.piece_size))
+        else:
+            intervalStart = 0
+        for i in range(intervalStart, self.numpieces):
+            if haves[i] and wantfunc(i):
+                inorder_values[i] = 1 / float((i - intervalStart + 1))
+                
+        "Normalize"
+        max_inorder = max(rarest_values)
+        for i in range(self.numpieces):
+            inorder_values[i] = inorder_values[i] / float(max_inorder)
+        
+        "Let the rank magic work"
+        for i in range(self.numpieces):
+            self.rank_values[i] = (0.8 * rarest_values[i]) + (0.2 * inorder_values[i]);
+            
+        "Return the best piece"
+        bestnum = 0
+        best_piece = -1
+        
+        for i in range(intervalStart, self.numpieces):          
+                if self.rank_values[i] > bestnum:
+                    bestnum = self.rank_values[i]
+                    best_piece = i
+                          
+        return best_piece     
         
     def rank(self, haves, wantfunc):
         """
