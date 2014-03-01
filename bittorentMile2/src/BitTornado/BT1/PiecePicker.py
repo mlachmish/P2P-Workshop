@@ -229,8 +229,7 @@ class PiecePicker:
         #use beta distribution on inorder frame
 
         while (True):
-            randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)
-            
+            randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)            
            
             t = int(time.time() - self.streamWatcher.startTime)
             if t > self.streamWatcher.delay:
@@ -245,8 +244,12 @@ class PiecePicker:
             print(randomPiece)
             print("interval start")
             print(intervalStart)
-            if ((randomPiece > intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it 
-                 return randomPiece
+            if ((randomPiece > intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it
+                print("took random piece") 
+                return randomPiece
+            else:
+                print("going to default .. ranking?")
+                return rank(haves, wantfunc)
         #    else:
          #       return self.rarestFirst(haves, wantfunc, True);                 
         
