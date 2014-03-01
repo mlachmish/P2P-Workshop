@@ -249,7 +249,7 @@ class PiecePicker:
                 return randomPiece
             else:
                 print("going to default .. ranking?")
-                return rank(haves, wantfunc)
+                return self.rank(haves, wantfunc)
         #    else:
          #       return self.rarestFirst(haves, wantfunc, True);                 
         
