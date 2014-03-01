@@ -238,7 +238,8 @@ class PiecePicker:
                 intervalStart = 0
             #2/7 is the average 
             # randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
-            randomPiece += self.rankForBeta(haves, wantfunc)   
+            randomPiece += self.rankForBeta(haves, wantfunc)
+            print("number of pieces is:", self.numpieces)
             print("random piece is:")         
             print(randomPiece)
             print("interval start")
