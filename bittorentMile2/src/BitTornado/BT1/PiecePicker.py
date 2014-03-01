@@ -246,7 +246,7 @@ class PiecePicker:
         for i in range(self.numpieces):
             self.rank_values[i] = (0.8 * rarest_values[i]) + (0.2 * inorder_values[i]);
             
-        randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
+        n =int ( betavariate(1.0,2.0) * self.numpieces)
         "Return the best piece"
         
         for i in range(self.numpieces):
