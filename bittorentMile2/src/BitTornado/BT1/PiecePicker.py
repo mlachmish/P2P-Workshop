@@ -245,7 +245,7 @@ class PiecePicker:
             print(randomPiece)
             print("interval start /n")
             print(intervalStart)
-            if ((randomPiece > intervalStart) and (haves[randomPiece] and wandfunc(randomPiece))): #if we want that piece and there's a seeder with it 
+            if ((randomPiece > intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it 
                  return randomPiece
         #    else:
          #       return self.rarestFirst(haves, wantfunc, True);                 
