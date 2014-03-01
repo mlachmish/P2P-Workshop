@@ -206,7 +206,7 @@ class PiecePicker:
         wantfunc - a function that return if we want that particular piece
         complete_first - should we complete pieces that we already started to take care of?
         """
-        return self.rank(haves, wantfunc)
+        return self.beta(haves, wantfunc)
     
     def beta_old(self, Haves,wantfunc):
          while (True):
@@ -227,8 +227,7 @@ class PiecePicker:
     
     def beta(self, haves, wantfunc):
         #use beta distribution on inorder frame
-
-        while (True):
+        
             randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)            
            
             t = int(time.time() - self.streamWatcher.startTime)
