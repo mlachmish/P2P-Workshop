@@ -241,9 +241,9 @@ class PiecePicker:
             #2/7 is the average 
             randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
             randomPiece += self.rankForBeta(haves, wantfunc)   
-            print("random piece is: /n")         
+            print("random piece is:")         
             print(randomPiece)
-            print("interval start /n")
+            print("interval start \n")
             print(intervalStart)
             if ((randomPiece > intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it 
                  return randomPiece
