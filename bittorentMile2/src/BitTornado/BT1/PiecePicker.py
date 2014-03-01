@@ -227,7 +227,7 @@ class PiecePicker:
     
     def beta(self, haves, wantfunc):
         #use beta distribution on inorder frame
-        
+            return self.rank(haves, wantfunc)
             randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)            
            
             t = int(time.time() - self.streamWatcher.startTime)
