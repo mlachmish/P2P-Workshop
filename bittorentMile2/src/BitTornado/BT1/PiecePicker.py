@@ -206,7 +206,63 @@ class PiecePicker:
         wantfunc - a function that return if we want that particular piece
         complete_first - should we complete pieces that we already started to take care of?
         """
-        return self.beta(haves, wantfunc)
+        return self.rankwithSort(haves, wantfunc)
+    
+  
+    def rankwithSort(self, haves, wantfunc):
+        """
+        Ranking algorithm implementation
+        """
+        
+        "Rarest part"
+        rarest_values = [0]*self.numpieces
+        for i in range(self.numpieces):
+            rarest_values[i] = 1 / float(max(self.level_in_interests[i],1))
+
+        "Normalize"
+        max_rarest = max(rarest_values)
+        for i in range(self.numpieces):
+            rarest_values[i] = rarest_values[i] / float(max_rarest)
+            
+            
+        "In-Order part"
+        inorder_values = [0]*self.numpieces
+        t = int(time.time() - self.streamWatcher.startTime)
+        if t > self.streamWatcher.delay:
+            intervalStart  =  int(((t - self.streamWatcher.delay  + self.streamWatcher.prefetch ) * \
+                                    self.streamWatcher.rate) / self.streamWatcher.toKbytes(self.streamWatcher.piece_size))
+        else:
+            intervalStart = 0
+        for i in range(intervalStart, self.numpieces):
+            if haves[i] and wantfunc(i):
+                inorder_values[i] = 1 / float((i - intervalStart + 1))
+                
+        "Normalize"
+        max_inorder = max(rarest_values)
+        for i in range(self.numpieces):
+            inorder_values[i] = inorder_values[i] / float(max_inorder)
+        
+        "Let the rank magic work"
+        for i in range(self.numpieces):
+            self.rank_values[i] = (0.8 * rarest_values[i]) + (0.2 * inorder_values[i]);
+            
+        randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
+        "Return the best piece"
+        
+        for i in range(self.numpieces):
+           if haves[i] and wantfunc(i):
+               self.rank_values[i] = (i, self.rank_values[i]);
+           else:
+               self.rank_values[i] = (i, 0);
+        
+        self.rank_values = sorted(self.rank_values, key=lambda val: val[1],reverse=True);
+        
+        if (self.rank_values[n][1] > 0):
+            print("Took random ranked piece")
+            return self.rank_values[n][0];
+        else:     
+            print("Back to default rarest first")       
+            return self.rarestFirst(haves, wantfunc, True);                    
     
     def beta_old(self, Haves,wantfunc):
          while (True):
@@ -237,14 +293,14 @@ class PiecePicker:
             else:
                 intervalStart = 0
             #2/7 is the average 
-            # randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
-            #randomPiece += self.rankForBeta(haves, wantfunc)
+            randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
+            randomPiece += self.rank(haves, wantfunc)
             print("number of pieces is:", self.numpieces)
             print("random piece is:")         
             print(randomPiece)
             print("interval start")
             print(intervalStart)
-            if ((randomPiece > intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it
+            if ((randomPiece >= intervalStart) and (haves[randomPiece] and wantfunc(randomPiece))): #if we want that piece and there's a seeder with it
                 print("took random piece") 
                 return randomPiece
             else:
