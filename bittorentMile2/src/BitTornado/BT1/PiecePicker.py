@@ -227,7 +227,7 @@ class PiecePicker:
     
     def beta(self, haves, wantfunc):
         #use beta distribution on inorder frame
-            return self.rank(haves, wantfunc)
+           
             randomPiece =int ( betavariate(2.0,5.0) * self.numpieces)            
            
             t = int(time.time() - self.streamWatcher.startTime)
@@ -238,7 +238,7 @@ class PiecePicker:
                 intervalStart = 0
             #2/7 is the average 
             # randomPiece -= int ( (2.0 / 7.0) * float (self.numpieces))
-            randomPiece = self.rankForBeta(haves, wantfunc)
+            #randomPiece += self.rankForBeta(haves, wantfunc)
             print("number of pieces is:", self.numpieces)
             print("random piece is:")         
             print(randomPiece)
@@ -249,7 +249,7 @@ class PiecePicker:
                 return randomPiece
             else:
                 print("going to default .. ranking?")
-                return self.rank(haves, wantfunc)
+                return self.rarestFirst(haves, wantfunc, True); 
         #    else:
          #       return self.rarestFirst(haves, wantfunc, True);                 
         
