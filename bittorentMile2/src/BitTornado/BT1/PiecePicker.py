@@ -206,9 +206,9 @@ class PiecePicker:
         wantfunc - a function that return if we want that particular piece
         complete_first - should we complete pieces that we already started to take care of?
         """
-        return self.beta2(haves, wantfunc)
+        return self.beta(haves, wantfunc)
     
-    def beta2(self, Haves,wantfunc):
+    def beta_old(self, Haves,wantfunc):
          while (True):
             randomPiece =int ( betavariate(1.0,2.0) * self.numpieces)
             print(randomPiece)
